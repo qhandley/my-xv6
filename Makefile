@@ -179,6 +179,7 @@ UPROGS=\
 	_rm\
 	_sh\
 	_stressfs\
+	_test\
 	_usertests\
 	_wc\
 	_zombie\
@@ -254,6 +255,7 @@ EXTRA=\
 	printf.c umalloc.c\
 	README dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
 	.gdbinit.tmpl gdbutil\
+	test.c\
 
 dist:
 	rm -rf dist
