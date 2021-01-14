@@ -51,6 +51,23 @@ sys_getsyscallinfo(void)
 }
 
 int
+sys_settickets(void)
+{
+  int num;
+
+  if(argint(0, &num) < 0)
+    return -1;
+  return settickets(num);
+}
+
+int
+sys_getpinfo(void)
+{
+  // TODO
+  return 0;
+}
+
+int
 sys_sbrk(void)
 {
   int addr;

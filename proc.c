@@ -88,6 +88,7 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  p->tickets = 1;
 
   release(&ptable.lock);
 
@@ -199,6 +200,7 @@ fork(void)
   np->sz = curproc->sz;
   np->parent = curproc;
   *np->tf = *curproc->tf;
+  np->tickets = curproc->tickets;
 
   // Clear %eax so that fork returns 0 in the child.
   np->tf->eax = 0;
@@ -220,6 +222,23 @@ fork(void)
 
   return pid;
 }
+
+// Set the tickets of the current process.
+// A process with more tickets (relative to another)
+// will receive a higher proportion of CPU cycles.
+int
+settickets(int tickets)
+{
+  struct proc *p = myproc();
+
+  if(tickets < 1)
+    return -1;
+
+  acquire(&ptable.lock);
+  p->tickets = tickets;
+  release(&ptable.lock);
+  return 0;
+};
 
 // Exit the current process.  Does not return.
 // An exited process remains in the zombie state
