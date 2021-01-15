@@ -47,7 +47,11 @@ sys_getpid(void)
 int
 sys_getsyscallinfo(void)
 {
-  return nsyscalls;
+  int n;
+
+  if((n = nsyscalls) < 0) // int overflow
+    return -1;
+  return n; 
 }
 
 int
