@@ -8,6 +8,7 @@ struct rtcdate;
 struct spinlock;
 struct sleeplock;
 struct stat;
+struct pstat;
 struct superblock;
 
 // bio.c
@@ -107,6 +108,7 @@ int             cpuid(void);
 void            exit(void);
 int             fork(void);
 int             growproc(int);
+int             getpinfo(struct pstat*);
 int             kill(int);
 struct cpu*     mycpu(void);
 struct proc*    myproc();
@@ -121,6 +123,9 @@ void            userinit(void);
 int             wait(void);
 void            wakeup(void*);
 void            yield(void);
+
+// rand.c
+uint            rand(void);
 
 // swtch.S
 void            swtch(struct context**, struct context*);

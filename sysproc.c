@@ -6,6 +6,7 @@
 #include "memlayout.h"
 #include "mmu.h"
 #include "proc.h"
+#include "pstat.h"
 
 extern uint nsyscalls;
 
@@ -67,8 +68,11 @@ sys_settickets(void)
 int
 sys_getpinfo(void)
 {
-  // TODO
-  return 0;
+  struct pstat *st;
+
+  if(argptr(0, (void*)&st, sizeof(*st)) < 0)
+    return -1;
+  return getpinfo(st);
 }
 
 int

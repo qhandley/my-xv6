@@ -6,6 +6,7 @@
 #include "x86.h"
 #include "proc.h"
 #include "spinlock.h"
+#include "pstat.h"
 
 struct {
   struct spinlock lock;
@@ -88,7 +89,10 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  p->pri = HIGH;
   p->tickets = 1;
+  p->hticks = 0;
+  p->lticks = 0;
 
   release(&ptable.lock);
 
@@ -199,8 +203,8 @@ fork(void)
   }
   np->sz = curproc->sz;
   np->parent = curproc;
-  *np->tf = *curproc->tf;
   np->tickets = curproc->tickets;
+  *np->tf = *curproc->tf;
 
   // Clear %eax so that fork returns 0 in the child.
   np->tf->eax = 0;
@@ -224,7 +228,7 @@ fork(void)
 }
 
 // Set the tickets of the current process.
-// A process with more tickets (relative to another)
+// A process with more tickets (at the same priority)
 // will receive a higher proportion of CPU cycles.
 int
 settickets(int tickets)
@@ -235,10 +239,47 @@ settickets(int tickets)
     return -1;
 
   acquire(&ptable.lock);
+
   p->tickets = tickets;
+
   release(&ptable.lock);
   return 0;
 };
+
+// Get information about all of the running
+// processes.
+int
+getpinfo(struct pstat *st)
+{
+  struct proc *p;
+  int pcnt = 0; 
+
+  acquire(&ptable.lock);
+
+  // Scan through process table pulling information.
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if(p->state != UNUSED){
+      st->inuse[pcnt] = 1;
+      st->pid[pcnt] = p->pid;
+      st->hticks[pcnt] = p->hticks;
+      st->lticks[pcnt] = p->lticks; 
+    } else {
+      st->inuse[pcnt] = 0;
+    }
+    pcnt++;
+  }
+
+  release(&ptable.lock);
+  return 0;
+};
+
+int
+runlottery(void)
+{
+  // TODO
+  uint tmp = rand();
+  return tmp;
+}
 
 // Exit the current process.  Does not return.
 // An exited process remains in the zombie state

@@ -7,7 +7,6 @@
 #include "x86.h"
 #include "syscall.h"
 
-// Global counter for syscalls
 uint nsyscalls = 0;
 
 // User code makes a system call with INT T_SYSCALL.
